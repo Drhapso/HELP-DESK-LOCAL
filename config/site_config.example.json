@@ -1,0 +1,13 @@
+{
+  "email_suffix": "@example.org",
+  "inventory_network": "192.0.2.0/24",
+  "proxies": [
+    {"host": "proxy.example.org", "port": 3128}
+  ],
+  "network_targets": [
+    {"group": "Red", "name": "Servidor principal", "host": "192.0.2.10", "ports": [445, 80, 443]},
+    {"group": "Red", "name": "DNS 1", "host": "192.0.2.53", "ports": [53]},
+    {"group": "Red", "name": "Conexión externa", "host": "www.example.com", "ports": [443], "external": true},
+    {"group": "Aplicativos", "name": "Intranet", "host": "intranet.example.org", "ports": [80]}
+  ]
+}

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Migración entre unidades | Mesa de Soporte S6</title>
+  <style>
+    :root { color-scheme:light; --ink:#1b2d35; --muted:#52646b; --line:#d8e1e3; --wash:#f2f6f5; --teal:#08736d; --amber:#8a4b00; --amber-bg:#fff3dd; --red:#9c2b2b; --red-bg:#fff0ee; font-family:"Segoe UI",Arial,sans-serif; }
+    * { box-sizing:border-box; } body { margin:0; background:var(--wash); color:var(--ink); line-height:1.65; }
+    header { background:#16343b; color:#fff; padding:34px max(24px,calc((100vw - 980px)/2)); border-bottom:5px solid var(--teal); }
+    header p { margin:8px 0 0; color:#c8d8d9; } main { width:min(980px,100% - 32px); margin:28px auto 56px; background:#fff; border:1px solid var(--line); padding:clamp(22px,5vw,48px); }
+    h1 { margin:0; font-size:clamp(28px,5vw,40px); line-height:1.15; } h2 { margin:38px 0 12px; padding-top:10px; border-top:1px solid var(--line); font-size:23px; } h3 { margin:24px 0 8px; font-size:18px; }
+    a { color:#075f65; text-underline-offset:3px; } nav { margin:24px 0; padding:18px 22px; background:#edf4f2; border-left:4px solid var(--teal); } nav ul { columns:2; margin:8px 0 0; padding-left:20px; } li { margin:5px 0; }
+    code { background:#edf1f2; padding:2px 5px; overflow-wrap:anywhere; } pre { white-space:pre-wrap; overflow-wrap:anywhere; background:#172b32; color:#eef7f5; padding:16px; border-radius:4px; overflow:auto; }
+    .notice { margin:22px 0; padding:16px 18px; border-left:4px solid #d38925; background:var(--amber-bg); } .alert { border-color:var(--red); background:var(--red-bg); }
+    table { width:100%; border-collapse:collapse; margin:14px 0; } th,td { text-align:left; border:1px solid var(--line); padding:9px 11px; vertical-align:top; } th { background:#edf4f2; }
+    footer { margin-top:40px; padding-top:16px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }
+    @media(max-width:640px) { nav ul { columns:1; } header { padding:26px 20px; } table { display:block; overflow-x:auto; } }
+    @media print { body { background:#fff; } main { width:100%; border:0; margin:0; } nav { display:none; } pre { white-space:pre-wrap; } a { color:inherit; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Migración entre unidades del dominio</h1>
+  <p>Procedimiento TI · Dominio example.org · Revisión 8 de octubre de 2026</p>
+</header>
+<main>
+  <nav aria-label="Contenido"><strong>Contenido</strong><ul>
+    <li><a href="#modalidades">Propósito y modalidades</a></li><li><a href="#preflight">Preflight</a></li><li><a href="#destino">Servidor destino</a></li><li><a href="#nueva">Instancia nueva</a></li>
+    <li><a href="#historial">Mover historial</a></li><li><a href="#tls">TLS y otras unidades</a></li><li><a href="#corte">DNS, corte y rollback</a></li><li><a href="#aceptacion">Aceptación</a></li>
+  </ul></nav>
+
+  <section id="modalidades"><h2>Propósito y modalidades</h2>
+    <p>La unidad destino debe aprobar hospedaje, DNS, segmento de red, tratamiento de tickets y cuentas administrativas. Distinguir:</p>
+    <ol><li><strong>Instancia nueva:</strong> mismo software, base y cuentas independientes; no copiar datos personales del origen.</li><li><strong>Traslado de historial:</strong> transferir SQLite con tickets, eventos, identificadores, correos, descripciones y hashes de contraseña. Requiere autorización del dueño de datos, transferencia cifrada, custodio y retención aprobados.</li></ol>
+    <p>No copie <code>lan-session-secret.txt</code>. El destino genera uno propio; se invalidan cookies previas, pero no tickets ni hashes si la SQLite autorizada se migra.</p>
+    <div class="notice alert"><strong>No extender el piloto HTTP a otra sede/VLAN.</strong> El transporte no cifra tickets ni credenciales. Para otras subredes, use HTTPS institucional y reglas aprobadas.</div>
+  </section>
+
+  <section id="preflight"><h2>Preflight obligatorio</h2>
+    <ul><li>FQDN aprobado, registro A/PTR y hostname del nuevo host.</li><li>IP estática/reservada, prefijo, gateway, DNS, VLAN y perfil DomainAuthenticated.</li><li>CIDR clientes autorizados, rutas inter-VLAN y puertos de firewall aprobados.</li><li>Certificado TLS institucional con SAN del FQDN destino y EKU Server Authentication para otras redes.</li><li>Fuentes de paquetes aprobadas para Python, URL Rewrite y ARR.</li><li>Decisión del propietario sobre base vacía o traslado autorizado; responsable de backup y rollback.</li></ul>
+    <p>No reutilice la IP de origen sin asignación expresa de Redes. No incruste credenciales de dominio en scripts.</p>
+  </section>
+
+  <section id="destino"><h2>Preparar el servidor destino</h2>
+    <ol><li>Instale Windows aprobado y parches institucionales.</li><li>Asigne hostname aprobado, únalo al dominio y configure la IP estática mediante Redes.</li><li>Valide DNS, gateway, perfil Domain y resolución del FQDN desde clientes.</li><li>Copie código verificado por canal aprobado. No publique el proyecto como share SMB o sitio estático: el portal necesita API.</li><li>Instale Python 3.13/versión aprobada y cree `.venv` desde repositorio interno aprobado.</li><li>Revise `deploy/run-lan-http.ps1`: cambie `$hostAddress` y el `RemoteAddress` a valores asignados. La copia actual está fijada a `192.0.2.10` y `192.0.2.0/24`.</li><li>El modo HTTP solo puede usarse en LAN destino confiable con autorización; otras redes requieren TLS.</li></ol>
+  </section>
+
+  <section id="nueva"><h2>Instancia nueva, sin datos del origen</h2>
+    <p>Recomendada cuando cada unidad debe conservar sus propios casos.</p>
+    <ol><li>No copie `instance/helpdesk.sqlite3`; use base vacía del destino.</li><li>El lanzador crea el secreto local en <code>C:\ProgramData\MesaSoporteS6</code> y aplica ACL SYSTEM/Administradores.</li><li>Desde PowerShell elevado, registre e inicie la tarea:</li></ol>
+<pre><code>Set-Location 'D:\HELP DESK TELEMATICA'
+Set-ExecutionPolicy -Scope Process Bypass
+.\deploy\install-lan-task.ps1
+Start-ScheduledTask -TaskName MesaSoporteS6-LAN</code></pre>
+    <ol start="4"><li>Cree administrador de destino mediante `server.py create-admin` usando el entorno virtual y contraseña aprobada.</li><li>Pruebe portal, login, firewall y una solicitud marcada como prueba antes de anunciar la URL.</li></ol>
+  </section>
+
+  <section id="historial"><h2>Mover historial autorizado</h2>
+    <h3>Backup de origen</h3>
+    <ol><li>Anuncie ventana de mantenimiento y pare la recepción.</li><li>Detenga la tarea y confirme que el listener desaparezca:</li></ol>
+<pre><code>Stop-ScheduledTask -TaskName MesaSoporteS6-LAN
+Get-NetTCPConnection -State Listen -LocalPort 8080 -ErrorAction SilentlyContinue</code></pre>
+    <ol start="3"><li>La SQLite usa WAL. No copie el archivo mientras el servicio escribe; haga backup transaccional con `sqlite3.Connection.backup()`.</li><li>Compruebe `PRAGMA integrity_check` (debe indicar `ok`), recuentos, fecha, checksum, responsable y autorización.</li><li>Cifre el backup con medio institucional y entregue al custodio. No use correo, WhatsApp, nube pública ni SMB no aprobado.</li></ol>
+    <h3>Restauración de destino</h3>
+    <ol><li>Detenga la tarea destino y restrinja `instance` a SYSTEM/Administradores.</li><li>Transfiera el backup aprobado por canal cifrado; valide integridad y recuentos antes de reemplazar la base del destino.</li><li>No copie el secreto de origen; el destino genera clave propia. Los hashes de usuarios se conservan si se mueve SQLite; las sesiones web antiguas no.</li><li>Inicie destino solo cuando origen esté detenido. Dos instancias escribiendo en copias separadas producen historiales divergentes.</li><li>Pruebe con usuarios autorizados y backup nuevo. Si falla, cierre destino y ejecute rollback acordado.</li></ol>
+  </section>
+
+  <section id="tls"><h2>TLS y acceso entre unidades</h2>
+    <p>Para tráfico fuera del segmento local, solicite certificado de servidor en la CA institucional para el FQDN destino, con SAN DNS, Server Authentication y clave privada protegida localmente.</p>
+    <p>La plantilla de solicitud `deploy/iis-cert-request.inf` contiene hoy el host actual; actualice sujeto y SAN antes de generar una CSR en el destino. Envíe solo el CSR por el proceso PKI. Si RPC a la CA está bloqueado, entregue la solicitud al equipo de PKI. No use el certificado SolarWinds, autofirmados ignorados por usuarios ni claves exportadas de otro host.</p>
+    <p>IIS/ARR/URL Rewrite con TLS requiere instalar módulos desde fuente corporativa, enlazar certificado al FQDN y validar cadena desde clientes. `web.config` fuerza HTTPS y reenvía a Waitress en loopback, pero <strong>el servicio de producción HTTPS aún requiere preparar una tarea/servicio backend distinto del lanzador LAN</strong>; no basta instalar el certificado.</p>
+    <p>Tras validar TLS, abra solo TCP 443 desde CIDR autorizados y cierre TCP 8080 del piloto. Nunca publique Waitress directamente entre VLAN.</p>
+  </section>
+
+  <section id="corte"><h2>DNS, corte y rollback</h2>
+    <ol><li>Redes crea el A record (y PTR si corresponde); usuarios accederán con el FQDN, no con IP.</li><li>Detenga origen, haga backup final, restaure/verifique destino y luego cambie DNS/enlaces.</li><li>No mantenga ambas instancias recibiendo tickets. Si destino aceptó tickets reales, no sobrescriba una base con otra; reconcilie bajo el dueño de datos.</li><li>Para rollback, cierre recepción destino, conserve evidencia/backup y revierta DNS solo si origen no perdió casos nuevos. Quite únicamente bindings y reglas creadas por el cambio.</li></ol>
+  </section>
+
+  <section id="aceptacion"><h2>Criterios de aceptación</h2>
+    <ul><li>☐ Aprobaciones de dueño de datos, Redes y Seguridad.</li><li>☐ FQDN/IP y tarea corresponden al destino aprobado.</li><li>☐ Firewall limita origen y puerto según matriz autorizada.</li><li>☐ HTTPS es confiable para cada segmento autorizado; 8080 no está expuesto entre sedes.</li><li>☐ SQLite íntegra y recuentos coinciden si se migró historial.</li><li>☐ Ticket de prueba único visible en consola autenticada.</li><li>☐ Backup/restore y responsable de rollback probados.</li></ul>
+  </section>
+  <footer>Documento de migración · Mesa de Soporte S6 · Revisar con Redes/Seguridad antes de cambios</footer>
+</main>
+</body>
+</html>

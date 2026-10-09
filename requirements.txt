@@ -1,0 +1,4 @@
+Flask>=3.1,<4
+waitress>=3.0,<4
+python-docx>=1.2,<2
+reportlab>=5.0,<6

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Manuales HTML | Mesa de Soporte S6</title>
+  <style>
+    :root { color-scheme:light; --ink:#1b2d35; --muted:#52646b; --line:#d8e1e3; --wash:#f2f6f5; --teal:#08736d; font-family:"Segoe UI",Arial,sans-serif; }
+    * { box-sizing:border-box; } body { margin:0; background:var(--wash); color:var(--ink); line-height:1.6; }
+    header { background:#16343b; color:#fff; padding:38px 24px; border-bottom:5px solid var(--teal); }
+    header div,main { width:min(850px,100% - 32px); margin:auto; } h1 { margin:0; font-size:34px; } header p { color:#c8d8d9; margin:8px 0 0; }
+    main { padding:28px 0 56px; } ul { list-style:none; padding:0; margin:0; } li { margin:12px 0; }
+    a.manual { display:block; padding:18px 20px; background:#fff; border:1px solid var(--line); border-left:4px solid var(--teal); color:var(--ink); text-decoration:none; }
+    a.manual:hover { border-left-color:#d38925; background:#fbfdfc; } strong { display:block; color:#075f65; font-size:18px; } small { color:var(--muted); }
+    .notice { margin:24px 0; padding:16px 18px; background:#fff3dd; border-left:4px solid #d38925; }
+    @media print { body { background:#fff; } a.manual { break-inside:avoid; } }
+  </style>
+</head>
+<body>
+<header><div><h1>Manuales HTML</h1><p>Mesa de Soporte S6 · documentos autónomos para abrir en navegador</p></div></header>
+<main>
+  <div class="notice"><strong>Aviso de seguridad</strong> El piloto actual usa HTTP sin cifrado y está limitado a la LAN institucional. No comparta estas direcciones fuera de la red aprobada.</div>
+  <ul>
+    <li><a class="manual" href="MANUAL_USUARIOS.html"><strong>Manual de usuario</strong><small>Acceso, registro de tickets, radicado, categorías y solución de problemas.</small></a></li>
+    <li><a class="manual" href="MANUAL_ADMIN_TI.html"><strong>Manual del administrador TI</strong><small>Consola, cuentas, tarea persistente, firewall, backups y diagnóstico.</small></a></li>
+    <li><a class="manual" href="MIGRACION_ENTRE_UNIDADES.html"><strong>Migración entre unidades</strong><small>Preflight, instancia nueva, traslado autorizado de SQLite, TLS, corte y rollback.</small></a></li>
+  </ul>
+</main>
+</body>
+</html>

@@ -1,0 +1,35 @@
+# Entornos y dependencias
+node_modules/
+__pycache__/
+*.pyc
+venv/
+.venv/
+.env
+instance/
+*.sqlite3
+*.db
+
+# Logs y bases de datos temporales
+*.log
+*.tmp
+*.bak
+
+# Informacion interna: nunca subir a GitHub
+datos/
+checkpoints/
+config/site_config.json
+*.pdf
+*.docx
+*.xlsx
+*.pfx
+*.pem
+*.key
+*.cer
+deploy/configure-smtp.ps1
+deploy/iis-cert-request.inf
+configurar_red_servidor_lan.ps1
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+

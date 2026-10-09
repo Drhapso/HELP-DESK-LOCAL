@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Manual de administrador TI | Mesa de Soporte S6</title>
+  <style>
+    :root { color-scheme:light; --ink:#1b2d35; --muted:#52646b; --line:#d8e1e3; --paper:#fff; --wash:#f2f6f5; --teal:#08736d; --amber:#8a4b00; --amber-bg:#fff3dd; --red:#9c2b2b; --red-bg:#fff0ee; font-family:"Segoe UI",Arial,sans-serif; }
+    * { box-sizing:border-box; } body { margin:0; background:var(--wash); color:var(--ink); line-height:1.65; }
+    header { background:#16343b; color:#fff; padding:34px max(24px,calc((100vw - 960px)/2)); border-bottom:5px solid var(--teal); }
+    header p { margin:8px 0 0; color:#c8d8d9; } main { width:min(960px,100% - 32px); margin:28px auto 56px; background:#fff; border:1px solid var(--line); padding:clamp(22px,5vw,48px); }
+    h1 { margin:0; font-size:clamp(28px,5vw,40px); line-height:1.15; } h2 { margin:38px 0 12px; padding-top:10px; border-top:1px solid var(--line); font-size:23px; } h3 { margin:24px 0 8px; font-size:18px; }
+    a { color:#075f65; text-underline-offset:3px; } nav { margin:24px 0; padding:18px 22px; background:#edf4f2; border-left:4px solid var(--teal); } nav ul { columns:2; margin:8px 0 0; padding-left:20px; } li { margin:5px 0; }
+    code { background:#edf1f2; padding:2px 5px; overflow-wrap:anywhere; } pre { white-space:pre-wrap; overflow-wrap:anywhere; background:#172b32; color:#eef7f5; padding:16px; border-radius:4px; overflow:auto; }
+    .notice { margin:22px 0; padding:16px 18px; border-left:4px solid #d38925; background:var(--amber-bg); } .alert { border-color:var(--red); background:var(--red-bg); }
+    table { width:100%; border-collapse:collapse; margin:14px 0; } th,td { text-align:left; border:1px solid var(--line); padding:9px 11px; vertical-align:top; } th { background:#edf4f2; }
+    footer { margin-top:40px; padding-top:16px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }
+    @media(max-width:640px) { nav ul { columns:1; } header { padding:26px 20px; } table { display:block; overflow-x:auto; } }
+    @media print { body { background:#fff; } main { width:100%; border:0; margin:0; } nav { display:none; } pre { white-space:pre-wrap; } a { color:inherit; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Manual del administrador TI</h1>
+  <p>Operación, seguridad y mantenimiento · Mesa de Soporte S6 · Revisión 8 de octubre de 2026</p>
+</header>
+<main>
+  <nav aria-label="Contenido"><strong>Contenido</strong><ul>
+    <li><a href="#alcance">Alcance actual</a></li><li><a href="#consola">Consola</a></li><li><a href="#cuentas">Cuentas</a></li>
+    <li><a href="#servicio">Tarea y servicio</a></li><li><a href="#firewall">Firewall</a></li><li><a href="#backup">Backup</a></li><li><a href="#fallos">Incidentes</a></li>
+  </ul></nav>
+
+  <section id="alcance"><h2>Alcance del servicio actual</h2>
+    <table><tbody>
+      <tr><th>Portal cliente</th><td><a href="http://192.0.2.10:8080/">http://192.0.2.10:8080/</a></td></tr>
+      <tr><th>Consola</th><td><a href="http://192.0.2.10:8080/login">http://192.0.2.10:8080/login</a></td></tr>
+      <tr><th>Runtime</th><td>Flask + Waitress, tarea SYSTEM <code>MesaSoporteS6-LAN</code>.</td></tr>
+      <tr><th>Listener</th><td><code>192.0.2.10:8080</code> (no comodín).</td></tr>
+      <tr><th>Firewall</th><td>TCP 8080, perfil Domain, origen <code>192.0.2.0/24</code>.</td></tr>
+      <tr><th>SQLite</th><td><code>D:\HELP DESK TELEMATICA\instance\helpdesk.sqlite3</code>.</td></tr>
+      <tr><th>Secreto sesión</th><td><code>C:\ProgramData\MesaSoporteS6\lan-session-secret.txt</code>, ACL SYSTEM/Administradores.</td></tr>
+    </tbody></table>
+    <div class="notice alert"><strong>HTTP no cifra datos.</strong> El piloto solo es para la LAN confiable de la unidad. No usar en Internet, redes públicas ni sedes/VLAN no autorizadas. Para otra subred se requiere TLS institucional y procedimiento de migración.</div>
+  </section>
+
+  <section id="consola"><h2>Consola y flujo de tickets</h2>
+    <ol><li>Abra <code>/login</code> e inicie sesión con una cuenta autorizada.</li><li>La consola en <code>/admin</code> obtiene tickets desde SQLite.</li><li>Busque/filtre por texto, estado o categoría y abra el detalle.</li><li>Cambie estado/asignación y guarde notas; confirme respuesta exitosa del servidor.</li></ol>
+    <p>Estados aceptados: <code>Abierto</code>, <code>En Proceso</code>, <code>En Espera</code>, <code>Resuelto</code> y <code>Cancelado</code>. Radicados: <code>S6-AAAA-NNNNNN</code>.</p>
+    <h3>Límites actuales</h3>
+    <ul><li>Inventario, directorio de agentes y algunas preferencias siguen en el navegador administrador y no son multiusuario centralizados.</li><li>Las imágenes JPEG, PNG y WebP quedan asociadas al ticket y se consultan desde el detalle administrativo. El backend limita cada imagen a 900 KB y el total por ticket a 5 MB.</li><li>Las notificaciones por correo requieren un relay SMTP configurado en el servidor; siguen pendientes el SLA calculado en backend, la gestión/restablecimiento de usuarios y la consulta de estado autoservicio.</li><li><code>database_schema.sql</code> es legado; el esquema activo lo inicializa <code>server.py</code>.</li></ul>
+    <p>No anuncie funciones pendientes como activas. No guarde tokens OAuth, claves SMTP ni contraseñas de dominio en el navegador o tickets.</p>
+  </section>
+
+  <section id="cuentas"><h2>Cuentas administrativas</h2>
+    <p>No existe cuenta/contraseña predeterminada. Para crear un administrador nuevo, use PowerShell autorizado en la raíz del proyecto:</p>
+<pre><code>Set-Location 'D:\HELP DESK TELEMATICA'
+.\.venv\Scripts\python.exe server.py create-admin</code></pre>
+    <p>El comando solicita usuario y contraseña (mínimo 14 caracteres) sin eco. Los hashes usan PBKDF2-HMAC-SHA256 con salt. No pegue contraseñas en chat, archivos o documentación. La consola no implementa recuperación/desactivación de cuentas; no modifique SQLite sin backup y autorización.</p>
+  </section>
+
+  <section id="servicio"><h2>Tarea persistente</h2>
+    <p>La tarea <code>MesaSoporteS6-LAN</code> corre como SYSTEM al arrancar Windows, tiene un retraso aleatorio de hasta 30 segundos, ignora instancias duplicadas, no tiene límite de ejecución y reintenta cinco veces cada minuto.</p>
+<pre><code>Get-ScheduledTask -TaskName MesaSoporteS6-LAN
+Get-ScheduledTaskInfo -TaskName MesaSoporteS6-LAN
+Get-NetTCPConnection -State Listen -LocalPort 8080
+Invoke-WebRequest 'http://192.0.2.10:8080/' -UseBasicParsing</code></pre>
+    <p>Normal: la tarea está <code>Running</code>, el listener pertenece a <code>192.0.2.10:8080</code> y el portal devuelve HTTP 200.</p>
+<pre><code>Restart-ScheduledTask -TaskName MesaSoporteS6-LAN</code></pre>
+    <p>Detención temporal:</p>
+<pre><code>Stop-ScheduledTask -TaskName MesaSoporteS6-LAN
+Get-NetTCPConnection -State Listen -LocalPort 8080 -ErrorAction SilentlyContinue</code></pre>
+    <p>Compruebe que desaparezca el listener. No arranque una instancia manual mientras la tarea esté activa. La regla permanece para que el próximo arranque funcione. No borre el secreto: hacerlo invalida sesiones.</p>
+  </section>
+
+  <section id="firewall"><h2>Firewall y archivos</h2>
+<pre><code>Get-NetFirewallRule -DisplayName MesaSoporteS6-LAN-HTTP | Get-NetFirewallAddressFilter
+Get-NetFirewallRule -DisplayName MesaSoporteS6-LAN-HTTP | Get-NetFirewallPortFilter</code></pre>
+    <p>Debe ser entrada TCP 8080, perfil Domain y origen <code>192.0.2.0/24</code>. No use <code>Any</code>, no abra 8080 a otras sedes y no enlace Waitress a <code>0.0.0.0</code>. La tarea valida la IP privada, el consentimiento HTTP y la regla antes de servir.</p>
+    <p>La SQLite está protegida por ACL SYSTEM/Administradores; el secreto también. No comparta `instance` por SMB ni dé acceso al grupo general de usuarios. El secreto debe ser persistente para que sesiones sobrevivan reinicios.</p>
+  </section>
+
+  <section id="backup"><h2>Backup de tickets</h2>
+    <p>SQLite utiliza WAL. Detenga la tarea y confirme que no haya listener antes de una copia coherente:</p>
+<pre><code>Stop-ScheduledTask -TaskName MesaSoporteS6-LAN
+Get-NetTCPConnection -State Listen -LocalPort 8080 -ErrorAction SilentlyContinue</code></pre>
+    <p>Use la API de backup de SQLite:</p>
+<pre><code>@'
+import sqlite3
+source = sqlite3.connect(r"D:\HELP DESK TELEMATICA\instance\helpdesk.sqlite3")
+backup = sqlite3.connect(r"D:\Backups\helpdesk-YYYYMMDD.sqlite3")
+source.backup(backup)
+backup.close()
+source.close()
+'@ | .\.venv\Scripts\python.exe -</code></pre>
+    <p>Cifre el backup con herramienta aprobada, ACL mínima y retención definida. Verifique <code>PRAGMA integrity_check</code> (esperado: <code>ok</code>). Reinicie con <code>Start-ScheduledTask -TaskName MesaSoporteS6-LAN</code>.</p>
+  </section>
+
+  <section id="fallos"><h2>Incidentes frecuentes</h2>
+    <ul><li><strong>Tarea no inicia:</strong> revise <code>LastTaskResult</code>, IP activa, puerto libre, venv, ACL y secreto.</li><li><strong>Otro equipo no conecta:</strong> compruebe que pertenezca a la subred, perfil Domain, firewall y ruta de VLAN.</li><li><strong>Portal abre y el envío falla:</strong> valide API mismo origen, SQLite con escritura y límite de 10 envíos/IP/10 min.</li><li><strong>Se requiere otra unidad:</strong> no amplíe el HTTP; siga el manual de migración y exija TLS institucional.</li></ul>
+  </section>
+  <footer>Documento administrador TI · Mesa de Soporte S6 · Piloto LAN</footer>
+</main>
+</body>
+</html>

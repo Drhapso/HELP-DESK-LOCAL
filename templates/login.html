@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Acceso | Mesa de Soporte S6</title>
+  <style>
+    :root { color-scheme: dark; font-family: "Segoe UI", sans-serif; color: #f0f2ec; background: #232820; }
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; display: grid; place-items: center; padding: 24px; background: #232820; }
+    main { width: min(100%, 420px); background: #2f362b; border: 1px solid #4f5a48; border-top: 5px solid #7d9077; padding: 32px; box-shadow: 0 16px 42px #0006; }
+    h1 { margin: 0 0 8px; font-size: 24px; }
+    p { color: #aab3a3; line-height: 1.5; margin: 0 0 24px; }
+    label { display: block; font-size: 13px; font-weight: 700; margin: 16px 0 6px; }
+    input { width: 100%; min-height: 44px; border: 1px solid #4f5a48; background: #232820; color: #f0f2ec; padding: 10px 12px; font: inherit; }
+    button { width: 100%; margin-top: 22px; min-height: 44px; border: 0; background: #6f8269; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+    button:hover { background: #5f7359; }
+    #error { min-height: 20px; margin: 14px 0 0; color: #ff8a80; font-size: 13px; }
+    :focus-visible { outline: 3px solid #c9cf96; outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Mesa de Soporte S6</h1>
+    <p>Acceso para personal autorizado de soporte.</p>
+    <form id="loginForm" autocomplete="on">
+      <input id="csrf" type="hidden" value="{{ csrf }}">
+      <label for="username">Usuario</label>
+      <input id="username" name="username" autocomplete="username" required maxlength="80">
+      <label for="password">Contraseña</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <button type="submit">Iniciar sesión</button>
+      <div id="error" role="alert" aria-live="polite"></div>
+    </form>
+  </main>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      const error = document.getElementById('error');
+      error.textContent = '';
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': document.getElementById('csrf').value },
+          body: JSON.stringify({
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
+          })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'No fue posible iniciar sesión');
+        location.assign('/admin');
+      } catch (err) {
+        error.textContent = err.message;
+        document.getElementById('password').value = '';
+      }
+    });
+  </script>
+</body>
+</html>

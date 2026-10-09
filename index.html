@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MESA DE SOPORTE S6 LOCAL - Reportar Ticket de Usuario</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-primary: #232820;
+      --bg-secondary: #2f362b;
+      --bg-tertiary: #3d4637;
+      --bg-card: #2f362b;
+      --border-color: #4f5a48;
+      --text-main: #f0f2ec;
+      --text-muted: #aab3a3;
+      --accent-blue: #b9c98f;
+      --accent-primary: #6f8269;
+      --accent-hover: #5f7359;
+      --brand-header: linear-gradient(180deg, #55684f, #3f4f3a);
+      --brand-header-text: #ffffff;
+      --status-resuelto: #10b981;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.45);
+    }
+
+    [data-theme="light"] {
+      color-scheme: light;
+      --bg-primary: #eceee8;
+      --bg-secondary: #f7f7f3;
+      --bg-tertiary: #dfe3d6;
+      --bg-card: #ffffff;
+      --border-color: #b4bba8;
+      --text-main: #262b24;
+      --text-muted: #5f685a;
+      --accent-blue: #4a6644;
+      --accent-primary: #5f7359;
+      --accent-hover: #4d5f48;
+      --brand-header: linear-gradient(180deg, #7d9077, #62775c);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 20px -3px rgba(0,0,0,0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2;
+      stroke: currentColor;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+
+    /* Topbar */
+    header.topbar {
+      height: 64px;
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 46px;
+      height: 46px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .brand-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    .status-pulse {
+      width: 8px;
+      height: 8px;
+      background-color: #10b981;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+      70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--accent-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-hover);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-tertiary);
+      color: var(--text-main);
+      border-color: var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent-blue);
+    }
+
+    .btn-icon-only {
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .btn-icon-only:hover {
+      color: var(--text-main);
+    }
+
+    /* Main Centered Single-Column Container */
+    .portal-container {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
+    }
+
+    .portal-layout {
+      display: grid;
+      grid-template-columns: minmax(250px, 300px) minmax(0, 700px) minmax(260px, 320px);
+      gap: 20px;
+      align-items: start;
+      justify-content: center;
+    }
+
+    .queue-panel {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      position: sticky;
+      top: 84px;
+    }
+
+    .net-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; }
+    .net-group { padding: 8px 18px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #262b24; background: #c9cf96; border-bottom: 1px solid #8a9060; }
+    .net-online { color: #14a014; font-weight: 700; }
+    .net-offline { color: #c62828; font-weight: 700; }
+
+    .queue-list { display: flex; flex-direction: column; }
+
+    .queue-header {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--brand-header);
+      color: var(--brand-header-text);
+    }
+    .queue-header .card-subtitle { color: rgba(255, 255, 255, 0.85); }
+    .queue-list { overflow-y: auto; max-height: calc(100vh - 220px); }
+    .queue-item { padding: 13px 18px; border-bottom: 1px solid var(--border-color); }
+    .queue-item:last-child { border-bottom: 0; }
+    .queue-meta { color: var(--text-muted); font-size: 11px; margin-top: 4px; }
+    .queue-status { font-size: 11px; font-weight: 700; }
+
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 22px 26px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--brand-header);
+      color: var(--brand-header-text);
+    }
+    .card-header .card-subtitle { color: rgba(255, 255, 255, 0.85); }
+
+    .card-title {
+      font-size: 19px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    .card-body {
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .section-divider {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--accent-blue);
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      @media (max-width: 980px) {
+        .portal-layout { grid-template-columns: 1fr; }
+        .queue-panel { position: static; }
+        .queue-list { max-height: 320px; }
+      }
+      .system-status {
+        display: none;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .req-star {
+      color: #ef4444;
+      margin-left: 3px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      padding: 11px 14px;
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-size: 13.5px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 110px;
+      line-height: 1.5;
+    }
+
+    /* Problem Type Visual Cards */
+    .problem-type-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 640px) {
+      .problem-type-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .type-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 12px 10px;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .type-card:hover {
+      border-color: var(--accent-blue);
+      transform: translateY(-1px);
+    }
+
+    .type-card.active {
+      background: rgba(37, 99, 235, 0.18);
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
+    }
+
+    .type-card span {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* Attachment / Screenshot Dialog Trigger & Preview Zone */
+    .attachment-trigger-box {
+      border: 1.5px dashed var(--border-color);
+      background: var(--bg-primary);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .attachment-trigger-box.dragover {
+      border-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .attachment-actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .attachment-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+    }
+
+    .att-item {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+    }
+
+    .att-thumb {
+      width: 100%;
+      height: 86px;
+      object-fit: cover;
+      border-radius: 4px;
+      background: #0b1120;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+
+    .att-file-box {
+      width: 100%;
+      height: 86px;
+      border-radius: 4px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: var(--accent-blue);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .att-meta {
+      font-size: 11px;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 600;
+    }
+
+    .att-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .att-remove {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.9);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Modal Dialogs */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(4px);
+      z-index: 60;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-container {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 640px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .modal-body {
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-footer {
+      padding: 14px 24px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.12);
+    }
+
+    .dropzone-large {
+      border: 2px dashed var(--accent-blue);
+      background: rgba(56, 189, 248, 0.05);
+      border-radius: var(--radius-md);
+      padding: 26px 20px;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+
+    .dropzone-large:hover {
+      background: rgba(56, 189, 248, 0.12);
+    }
+
+    .toast-banner {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      background: #10b981;
+      color: white;
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 13px;
+      box-shadow: var(--shadow-lg);
+      z-index: 100;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: all 0.2s;
+    }
+
+    .toast-banner.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .char-counter {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar (Independiente del Administrador) -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon"><img src="/assets/logo-baint" alt="Logo BAINT" onerror="this.replaceWith(document.createTextNode('S6'))"></div>
+      <div>
+        <div class="brand-title">MESA DE SOPORTE S6 LOCAL</div>
+        <div class="brand-subtitle">Registro de Solicitudes e Incidencias &bull; Red Interna</div>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <div class="system-status">
+        <div class="status-pulse"></div>
+        <span>Servicio de Soporte Activo</span>
+      </div>
+
+      <button class="btn-icon-only" onclick="toggleTheme()" title="Cambiar Tema Día / Noche">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Single-Column Form Container -->
+  <main class="portal-container">
+    <div class="portal-layout">
+    <aside class="queue-panel" aria-live="polite">
+      <div class="queue-header">
+        <div class="card-title" style="font-size:16px;">Estado de la Red</div>
+        <div class="card-subtitle" id="networkStatusUpdated">Actualización automática cada 30 segundos</div>
+      </div>
+      <div id="networkStatusList" class="queue-list">
+        <div class="queue-item" style="color:var(--text-muted); font-size:12px;">Comprobando servicios...</div>
+      </div>
+    </aside>
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <svg class="icon" style="color: var(--accent-blue); width: 22px; height: 22px;" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+          Nuevo Ticket de Soporte Técnico
+        </div>
+        <div class="card-subtitle">Diligencie manualmente todos los campos, ingrese su correo institucional Zoho Workplace (@example.org) y describa su solicitud.</div>
+      </div>
+
+      <form id="clientTicketForm" class="card-body" autocomplete="off" onsubmit="submitClientTicket(event)">
+        <!-- 1. Datos del Usuario -->
+        <div class="section-divider">
+          <span>1. Datos del Usuario</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>
+              <span>Nombre Completo <span class="req-star">*</span></span>
+            </label>
+            <input type="text" id="clientName" value="" autocomplete="off" placeholder="Ingrese su nombre completo y grado / cargo" required>
+          </div>
+
+          <div class="form-group">
+            <label>
+              <span>Usuario <span class="req-star">*</span></span>
+              <span style="font-size:10px; color:var(--accent-blue); text-transform:none;">Cédula o usuario</span>
+            </label>
+            <input type="text" id="clientUser" value="" autocomplete="off" placeholder="Ingrese su número de cédula o usuario" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>
+              <span>Correo Electrónico Institucional <span class="req-star">*</span></span>
+              <span style="font-size:10px; color:var(--accent-blue); text-transform:none;">Zoho Workplace (@example.org)</span>
+            </label>
+            <input type="email" id="clientEmail" value="" autocomplete="off" placeholder="usuario@example.org" required>
+          </div>
+
+          <div class="form-group">
+            <label>
+              <span>Equipo / Dependencia / Puesto <span class="req-star">*</span></span>
+            </label>
+            <input type="text" id="clientAsset" value="" autocomplete="off" placeholder="Ingrese nombre del equipo, oficina o dependencia" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>
+            <span>Ubicación del sitio de trabajo <span class="req-star">*</span></span>
+          </label>
+          <input type="text" id="clientWorkLocation" value="" autocomplete="off" placeholder="Indique oficina, bloque, piso o puesto donde se requiere el soporte" required>
+        </div>
+
+        <!-- 2. Tipo de Problema -->
+        <div class="section-divider">
+          <span>2. Tipo de Problema</span>
+        </div>
+
+        <div class="form-group">
+          <label><span>Categoría General <span class="req-star">*</span></span></label>
+          <div class="problem-type-grid">
+            <div class="type-card" data-cat="Hardware" onclick="selectProblemType('Hardware', this)">
+              <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              <span>Hardware / PC</span>
+            </div>
+            <div class="type-card" data-cat="Software" onclick="selectProblemType('Software', this)">
+              <svg class="icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              <span>Software / SO</span>
+            </div>
+            <div class="type-card" data-cat="Red" onclick="selectProblemType('Red', this)">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              <span>Red / Plataformas</span>
+            </div>
+            <div class="type-card" data-cat="Impresoras" onclick="selectProblemType('Impresoras', this)">
+              <svg class="icon" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+              <span>Impresoras / Escáner</span>
+            </div>
+          </div>
+          <input type="hidden" id="clientCategory" value="">
+        </div>
+
+        <div class="form-group">
+          <label><span>Tipo de Problema Específico <span class="req-star">*</span></span></label>
+          <select id="clientSubcategory" required>
+            <option value="" selected disabled>-- Seleccione primero una categoría general --</option>
+          </select>
+        </div>
+
+        <details style="border:1px solid var(--border-color); border-radius:8px; background:var(--bg-primary); padding:10px 12px;">
+          <summary style="cursor:pointer; font-weight:700; color:var(--accent-blue);">Guías rápidas de solución</summary>
+          <div id="knowledgeBase" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px; margin-top:12px;">
+            <div style="font-size:12px; color:var(--text-muted);">Cargando guías de soporte...</div>
+          </div>
+        </details>
+
+        <!-- 3. Cuadro de texto para párrafo corto -->
+        <div class="section-divider">
+          <span>3. Descripción del Problema</span>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <span>Describa en un párrafo corto el inconveniente <span class="req-star">*</span></span>
+            <span class="char-counter" id="descCounter">0 / 500 caracteres</span>
+          </label>
+          <textarea
+            id="clientDescription"
+            maxlength="500"
+            autocomplete="off"
+            placeholder="Ingrese aquí un párrafo corto explicando qué ocurre con su equipo, periférico, red o aplicativo..."
+            oninput="updateCharCounter()"
+            required
+          ></textarea>
+        </div>
+
+        <!-- 4. Cuadro de diálogo para capturas de pantalla o recursos opcionales -->
+        <div class="section-divider">
+          <span>4. Capturas de Pantalla o Recursos Opcionales</span>
+          <span style="font-size:10.5px; color:var(--text-muted); text-transform:none;">Opcional</span>
+        </div>
+
+        <div class="attachment-trigger-box" id="mainDropZone">
+          <div class="attachment-actions-row">
+            <div>
+              <div style="font-size:13px; font-weight:600; color:var(--text-main);">
+                Capturas de pantalla o archivos de apoyo
+              </div>
+              <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
+                Abra el cuadro de diálogo para cargar imágenes/archivos o presione <strong>Ctrl + V</strong> para pegar una captura.
+              </div>
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="openResourceDialog()">
+              <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              Ingresar Capturas / Recursos
+            </button>
+          </div>
+
+          <div id="attachmentPreviewGrid" class="attachment-grid" style="display:none;"></div>
+          <div id="optionalResourceNoteDisplay" style="display:none; font-size:12px; color:var(--accent-blue); background:rgba(56,189,248,0.08); padding:8px 10px; border-radius:6px;"></div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; padding-top:6px;">
+          <button type="button" class="btn btn-secondary" onclick="resetClientForm()">Limpiar Campos</button>
+          <button type="submit" class="btn btn-primary" style="padding: 11px 26px; font-size:14px;">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            Enviar Ticket
+          </button>
+        </div>
+      </form>
+    </section>
+    <aside class="queue-panel" aria-live="polite">
+      <div class="queue-header">
+        <div class="card-title" style="font-size:16px;">Tickets en cola</div>
+        <div class="card-subtitle">Actualización automática cada 30 segundos</div>
+      </div>
+      <div id="ticketQueueList" class="queue-list">
+        <div class="queue-item" style="color:var(--text-muted); font-size:12px;">Cargando cola de soporte...</div>
+      </div>
+    </aside>
+    </div>
+    </div>
+  </main>
+
+  <!-- Cuadro de Diálogo (Modal) para Ingresar Capturas de Pantalla o Recursos Opcionales -->
+  <div class="modal-overlay" id="modalResources" onclick="if(event.target.id==='modalResources') closeResourceDialog()">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg class="icon" style="color:var(--accent-blue);" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          Ingresar Capturas de Pantalla o Recursos Opcionales
+        </div>
+        <button class="modal-close" onclick="closeResourceDialog()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <input type="file" id="dialogFileInput" multiple accept="image/*,.pdf,.txt,.log,.doc,.docx,.xls,.xlsx,.zip" style="display:none;" onchange="handleFilesSelected(event)">
+
+        <div class="dropzone-large" id="modalDropZone" onclick="document.getElementById('dialogFileInput').click()">
+          <svg class="icon" style="width:36px; height:36px; color:var(--accent-blue);" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          <div style="font-size:14px; font-weight:700; color:var(--text-main);">
+            Seleccionar capturas de pantalla o recursos desde el equipo
+          </div>
+          <div style="font-size:12px; color:var(--text-muted);">
+            También puede arrastrar archivos a este cuadro o presionar <strong>Ctrl + V</strong> para pegar una captura del portapapeles.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <span>Recurso Adicional / Ruta o Referencia (Opcional)</span>
+          </label>
+          <input type="text" id="dialogResourceLink" value="" autocomplete="off" placeholder="Ej: Ruta de archivo compartido, código de error o referencia opcional">
+        </div>
+
+        <div>
+          <label style="margin-bottom:8px;"><span>Archivos / Capturas Seleccionadas (<span id="dialogAttCount">0</span>)</span></label>
+          <div id="dialogAttachmentGrid" class="attachment-grid"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="clearAllAttachments()">Quitar Todos</button>
+        <button type="button" class="btn btn-primary" onclick="saveResourceDialog()">Guardar y Adjuntar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cuadro de Confirmación de Ticket Radicado (Solo Datos del Ticket) -->
+  <div class="modal-overlay" id="modalConfirm" onclick="if(event.target.id==='modalConfirm') closeConfirmModal()">
+    <div class="modal-container" style="max-width: 480px;">
+      <div class="modal-header">
+        <div class="modal-title" style="color: var(--status-resuelto);">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          Ticket Registrado Exitosamente
+        </div>
+
+        <button class="modal-close" onclick="closeConfirmModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="confirmBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="closeConfirmModal()">Aceptar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalSubmitConfirm" onclick="if(event.target.id==='modalSubmitConfirm') closeSubmitConfirmModal()">
+    <div class="modal-container" style="max-width:500px;">
+      <div class="modal-header"><div class="modal-title">Confirmar envío de ticket</div><button class="modal-close" type="button" onclick="closeSubmitConfirmModal()" aria-label="Cerrar">&times;</button></div>
+      <div class="modal-body"><div id="submitConfirmBody" style="font-size:13px; color:var(--text-muted);"></div></div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeSubmitConfirmModal()">Revisar datos</button><button type="button" class="btn btn-primary" onclick="confirmClientTicketSubmission()">Enviar ticket</button></div>
+    </div>
+  </div>
+
+  <div class="toast-banner" id="clientToast"></div>
+
+  <script>
+    const TAXONOMY = {
+      Hardware: [
+        "Fallo en los perifericos",
+        "Fallo de Almacenamiento (HDD, SSD, NVME)",
+        "Fallo de memoria ram",
+        "Fallo de fuente de poder",
+        "Fallo de video GPU",
+        "Fallo de motherboard",
+        "Fallo de botones en Chasis",
+        "Fallo de refrigeracion",
+        "Fallo de tarjeta de red",
+        "Fallo de pila de motherboard",
+        "Fallo de monitores o pantalla integrada",
+        "Fallo en salidas de audio / video / puertos usb / otros puertos",
+        "Fallo en cables de audio o video"
+      ],
+      Software: [
+        "Fallo de rendimiento del SO",
+        "Fallo de rendimiento de aplicativos",
+        "Fallo de aplicativos",
+        "Fallo de lectura / escritura de archivos",
+        "Fallo de servicios de dominio (inicios de sesion, conexion al dominio, sincronizacion general)"
+      ],
+      Red: [
+        "Fallas en acceso a plataformas institucionales",
+        "Fallas en acceso a plataformas especificas",
+        "Fallo de navegacion web",
+        "Fallo de red local (recusros compartidos, acceso a bases de datos)"
+      ],
+      Impresoras: [
+        "Falla en impresion directa o protegida",
+        "Falla en maquina",
+        "Falla en conexion a impresoras o escaner compartidos",
+        "Falla en escaner local",
+        "Falla en salida de impresion (Falta de toner/tinta, errores comunes en la impresion)"
+      ]
+    };
+
+    let pendingAttachments = [];
+    let optionalResourceLink = '';
+    const CLIENT_BUILD = '2026-10-09-logo-1';
+
+    function escHtml(v) {
+      return String(v == null ? '' : v)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('clientToast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.classList.remove('show'), 3200);
+    }
+
+    function toggleTheme() {
+      const root = document.documentElement;
+      root.setAttribute('data-theme', root.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    }
+
+    // Validación obligatoria de correo institucional Zoho Workplace (@example.org)
+    function esCorreoInstitucionalZoho(correo) {
+      const limpio = String(correo || '').trim().toLowerCase();
+      return /^[^\s@]+@example\.org$/i.test(limpio) && !limpio.includes('gmail.com');
+    }
+
+    function selectProblemType(cat, cardElem) {
+      document.querySelectorAll('.type-card').forEach(c => c.classList.remove('active'));
+      if (cardElem) cardElem.classList.add('active');
+      document.getElementById('clientCategory').value = cat;
+
+      const subSelect = document.getElementById('clientSubcategory');
+      subSelect.innerHTML = '<option value="" selected disabled>-- Seleccione el tipo de problema específico --</option>';
+      (TAXONOMY[cat] || []).forEach(sub => {
+        const opt = document.createElement('option');
+        opt.value = sub;
+        opt.textContent = sub;
+        subSelect.appendChild(opt);
+      });
+    }
+
+    function renderPortalConfiguration(config) {
+      Object.keys(TAXONOMY).forEach(key => delete TAXONOMY[key]);
+      config.categories.forEach(category => {
+        TAXONOMY[category.name] = category.subcategories.map(subcategory => subcategory.name);
+      });
+      const grid = document.querySelector('.problem-type-grid');
+      if (grid) {
+        grid.innerHTML = config.categories.map(category => `
+          <div class="type-card" data-cat="${escHtml(category.name)}" onclick="selectProblemType(this.dataset.cat, this)">
+            <span>${escHtml(category.name)}</span>
+          </div>
+        `).join('');
+      }
+      const knowledge = document.getElementById('knowledgeBase');
+      if (knowledge) {
+        knowledge.innerHTML = config.knowledge.length
+          ? config.knowledge.map(article => `
+            <article style="border:1px solid var(--border-color); border-radius:8px; padding:12px; background:var(--bg-primary);">
+              <div style="font-size:10px; color:var(--accent-blue); text-transform:uppercase;">${escHtml(article.category)}</div>
+              <strong style="display:block; margin:4px 0 6px;">${escHtml(article.title)}</strong>
+              <div style="font-size:12px; color:var(--text-muted); white-space:pre-wrap;">${escHtml(article.content)}</div>
+            </article>
+          `).join('')
+          : '<div style="font-size:12px; color:var(--text-muted);">No hay guías publicadas.</div>';
+      }
+    }
+
+    async function loadPortalConfiguration() {
+      try {
+        const response = await fetch('/api/portal-config');
+        if (!response.ok) throw new Error('No disponible');
+        renderPortalConfiguration(await response.json());
+      } catch (_error) {
+        showToast('No fue posible actualizar las guías y categorías desde el servidor.');
+      }
+    }
+
+    function updateCharCounter() {
+      const val = document.getElementById('clientDescription').value || '';
+      document.getElementById('descCounter').textContent = `${val.length} / 500 caracteres`;
+    }
+
+    // ===== Cuadro de Diálogo de Capturas y Recursos Opcionales =====
+    function openResourceDialog() {
+      document.getElementById('dialogResourceLink').value = optionalResourceLink;
+      renderAttachmentPreviews();
+      document.getElementById('modalResources').classList.add('active');
+    }
+
+    function closeResourceDialog() {
+      document.getElementById('modalResources').classList.remove('active');
+    }
+
+    function saveResourceDialog() {
+      optionalResourceLink = (document.getElementById('dialogResourceLink').value || '').trim();
+      renderAttachmentPreviews();
+      closeResourceDialog();
+      showToast('Capturas y recursos adjuntados al formulario');
+    }
+
+    function clearAllAttachments() {
+      pendingAttachments = [];
+      optionalResourceLink = '';
+      const linkInput = document.getElementById('dialogResourceLink');
+      if (linkInput) linkInput.value = '';
+      const fInput = document.getElementById('dialogFileInput');
+      if (fInput) fInput.value = '';
+      renderAttachmentPreviews();
+    }
+
+    function removeAttachment(idx) {
+      pendingAttachments.splice(idx, 1);
+      renderAttachmentPreviews();
+    }
+
+    function handleFilesSelected(ev) {
+      const files = Array.from((ev.target && ev.target.files) || ev.files || []);
+      processFiles(files);
+      if (ev.target) ev.target.value = '';
+    }
+
+    function processFiles(files) {
+      files.forEach(file => {
+        if (pendingAttachments.length >= 6) {
+          showToast('Máximo 6 archivos adjuntos por ticket');
+          return;
+        }
+        if (!file.type.startsWith('image/')) {
+          showToast('Solo se admiten imágenes JPEG, PNG o WebP como soporte.');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = e => {
+          const img = new Image();
+          img.onload = () => {
+            let scale = Math.min(1, 1600 / Math.max(img.width, img.height));
+            let quality = 0.84;
+            let dataUrl = '';
+            do {
+              const canvas = document.createElement('canvas');
+              canvas.width = Math.max(1, Math.round(img.width * scale));
+              canvas.height = Math.max(1, Math.round(img.height * scale));
+              canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+              dataUrl = canvas.toDataURL('image/jpeg', quality);
+              if (dataUrl.length > 1200000) {
+                quality -= 0.1;
+                if (quality < 0.45) {
+                  quality = 0.75;
+                  scale *= 0.8;
+                }
+              }
+            } while (dataUrl.length > 1200000 && scale > 0.2);
+            if (dataUrl.length > 1200000) {
+              showToast(`No fue posible comprimir ${file.name} por debajo del límite permitido.`);
+              return;
+            }
+            pendingAttachments.push({
+              name: `${(file.name || `captura_${Date.now()}`).replace(/\.[^.]+$/, '')}.jpg`,
+              type: 'image/jpeg',
+              size: `${Math.round((dataUrl.length * 3 / 4) / 1024)} KB`,
+              dataUrl
+            });
+            renderAttachmentPreviews();
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderAttachmentPreviews() {
+      const mainGrid = document.getElementById('attachmentPreviewGrid');
+      const dialogGrid = document.getElementById('dialogAttachmentGrid');
+      const countSpan = document.getElementById('dialogAttCount');
+      const linkBox = document.getElementById('optionalResourceNoteDisplay');
+
+      countSpan.textContent = pendingAttachments.length;
+
+      const buildHtml = () => pendingAttachments.map((att, idx) => {
+        const isImg = att.type && att.type.startsWith('image/') && att.dataUrl;
+        return `
+          <div class="att-item">
+            <button type="button" class="att-remove" onclick="removeAttachment(${idx})" title="Quitar archivo">&times;</button>
+            ${isImg
+              ? `<img src="${att.dataUrl}" class="att-thumb" alt="${escHtml(att.name)}">`
+              : `<div class="att-file-box">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                  <span>ARCHIVO</span>
+                </div>`
+            }
+            <div class="att-meta" title="${escHtml(att.name)}">${escHtml(att.name)}</div>
+            <div class="att-sub">${escHtml(att.size || '')}</div>
+          </div>
+        `;
+      }).join('');
+
+      const html = buildHtml();
+      dialogGrid.innerHTML = html || '<div style="font-size:12px; color:var(--text-muted); grid-column:1/-1;">No hay capturas ni recursos seleccionados aún.</div>';
+
+      if (pendingAttachments.length > 0) {
+        mainGrid.style.display = 'grid';
+        mainGrid.innerHTML = html;
+      } else {
+        mainGrid.style.display = 'none';
+        mainGrid.innerHTML = '';
+      }
+
+      if (optionalResourceLink) {
+        linkBox.style.display = 'block';
+        linkBox.innerHTML = `<strong>Recurso opcional:</strong> ${escHtml(optionalResourceLink)}`;
+      } else {
+        linkBox.style.display = 'none';
+      }
+    }
+
+    // Soporte para pegar capturas con Ctrl+V y Drag & Drop
+    window.addEventListener('paste', e => {
+      const items = (e.clipboardData && e.clipboardData.items) || [];
+      const files = [];
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          const f = items[i].getAsFile();
+          if (f) files.push(new File([f], `captura_portapapeles_${Date.now()}.png`, { type: f.type }));
+        }
+      }
+      if (files.length) {
+        processFiles(files);
+        showToast('Captura de pantalla pegada desde el portapapeles');
+      }
+    });
+
+    ['mainDropZone', 'modalDropZone'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('dragover'); });
+      el.addEventListener('dragleave', () => el.classList.remove('dragover'));
+      el.addEventListener('drop', e => {
+        e.preventDefault();
+        el.classList.remove('dragover');
+        if (e.dataTransfer && e.dataTransfer.files) {
+          processFiles(Array.from(e.dataTransfer.files));
+        }
+      });
+    });
+
+    // Dejar absolutamente todos los campos en blanco
+    function resetClientForm() {
+      const form = document.getElementById('clientTicketForm');
+      if (form) form.reset();
+      ['clientName', 'clientUser', 'clientEmail', 'clientAsset', 'clientWorkLocation', 'clientCategory', 'clientDescription'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      document.querySelectorAll('.type-card').forEach(c => c.classList.remove('active'));
+      const subSelect = document.getElementById('clientSubcategory');
+      if (subSelect) {
+        subSelect.innerHTML = '<option value="" selected disabled>-- Seleccione primero una categoría general --</option>';
+      }
+      clearAllAttachments();
+      updateCharCounter();
+    }
+
+    // ============================================================================
+    // CONFIGURACIÓN DE RED INTERNA Y CORREO CORPORATIVO ZOHO WORKPLACE (SIN BACKEND)
+    // ============================================================================
+    const DEFAULT_NETWORK_ZOHO_CONFIG = {
+      red_interna: {
+        rango_ip: '192.0.2.10 - 254',
+        subred_cidr: '192.0.2.0/24',
+        puerta_enlace: '192.0.2.10',
+        mascara: '255.255.255.0',
+        dns_primario: '192.0.2.10',
+        dns_secundario: '192.0.2.10',
+        proxy_ip: '192.0.2.10',
+        proxy_puerto: 3128,
+        proxy_url: 'http://192.0.2.10:3128',
+        dominio_principal: 'example.org',
+        dominio_secundario: 'EJC_NACIONAL'
+      },
+      correo_zoho: {
+        proveedor: 'Zoho Workplace',
+        dominio_autorizado: 'example.org',
+        bloquear_gmail: true,
+        destinatarios: [
+          'darwin.badillo@example.org',
+          'brandon.maciasa@example.org'
+        ],
+        zoho_webmail_url: 'https://mail.zoho.com',
+        zoho_compose_url: 'https://mail.zoho.com/zm/#compose',
+        zoho_smtp_host: 'smtp.zoho.com',
+        zoho_smtp_puerto: 465,
+        zoho_imap_host: 'imap.zoho.com',
+        zoho_imap_puerto: 993,
+        zoho_webhook_url: 'https://mail.zoho.com/api/accounts/messages',
+        zoho_account_id: '',
+        zoho_oauth_token: '',
+        envio_automatico_silencioso: true
+      }
+    };
+
+    function getNetworkZohoConfig() {
+      try {
+        const raw = localStorage.getItem(NETWORK_ZOHO_CONFIG_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return {
+            red_interna: { ...DEFAULT_NETWORK_ZOHO_CONFIG.red_interna, ...(parsed.red_interna || {}) },
+            correo_zoho: { ...DEFAULT_NETWORK_ZOHO_CONFIG.correo_zoho, ...(parsed.correo_zoho || {}) }
+          };
+        }
+      } catch (e) {}
+      return JSON.parse(JSON.stringify(DEFAULT_NETWORK_ZOHO_CONFIG));
+    }
+
+    function validarDestinatariosZoho(lista) {
+      const permitidos = (Array.isArray(lista) ? lista : String(lista || '').split(/[,;]+/))
+        .map(s => s.trim().toLowerCase())
+        .filter(email => email && email.endsWith('@example.org') && !email.includes('gmail.com'));
+      return permitidos.length > 0
+        ? permitidos
+        : ['darwin.badillo@example.org', 'brandon.maciasa@example.org'];
+    }
+
+    // Envío automático en segundo plano a Zoho Workplace (@example.org) al crear el ticket
+    async function enviarNotificacionCorreo(ticket) {
+      const cfg = getNetworkZohoConfig();
+      const destinatarios = validarDestinatariosZoho(cfg.correo_zoho.destinatarios);
+      const recipientsStr = destinatarios.join(', ');
+      const recipientsListStr = destinatarios.join(',');
+
+      const subject = `[NUEVO TICKET ${ticket.id}] ${ticket.category} - ${ticket.subcategory} | ${ticket.clientName}`;
+      const attNames = (ticket.attachments || []).map(a => `${a.name} (${a.size || ''})`).join(', ') || 'Sin adjuntos';
+
+      const bodyPlain = [
+        `NOTIFICACIÓN AUTOMÁTICA DE TICKET - MESA DE SOPORTE S6 LOCAL`,
+        `============================================================`,
+        `Radicado:                 ${ticket.id}`,
+        `Fecha y Hora:             ${ticket.createdAt}`,
+        `Nombre del Usuario:       ${ticket.clientName}`,
+        `Usuario / Cédula:         ${ticket.clientUser}`,
+        `Correo Usuario (Zoho):    ${ticket.requesterEmail}`,
+        `Equipo / Dependencia:     ${ticket.asset}`,
+        `Tipo de Problema:         ${ticket.category} - ${ticket.subcategory}`,
+        `Descripción:`,
+        `${ticket.description}`,
+        `------------------------------------------------------------`,
+        `Adjuntos (${(ticket.attachments || []).length}): ${attNames}`
+      ].join('\n');
+
+      const payloadZoho = {
+        fromAddress: destinatarios[0],
+        toAddress: recipientsListStr,
+        recipients: destinatarios,
+        requesterEmail: ticket.requesterEmail,
+        subject: subject,
+        content: bodyPlain,
+        mailFormat: 'plaintext',
+        ticket: {
+          id: ticket.id,
+          createdAt: ticket.createdAt,
+          clientName: ticket.clientName,
+          clientUser: ticket.clientUser,
+          requesterEmail: ticket.requesterEmail,
+          asset: ticket.asset,
+          category: ticket.category,
+          subcategory: ticket.subcategory,
+          description: ticket.description,
+          attachmentsCount: (ticket.attachments || []).length,
+          attachmentNames: attNames
+        }
+      };
+
+      let channelUsed = 'zoho_auto_background';
+
+      if (cfg.correo_zoho.zoho_account_id && cfg.correo_zoho.zoho_oauth_token) {
+        try {
+          const zohoApiUrl = `https://mail.zoho.com/api/accounts/${encodeURIComponent(cfg.correo_zoho.zoho_account_id)}/messages`;
+          await fetch(zohoApiUrl, {
+            method: 'POST',
+            keepalive: true,
+            headers: {
+              'Authorization': `Zoho-oauthtoken ${cfg.correo_zoho.zoho_oauth_token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              fromAddress: destinatarios[0],
+              toAddress: recipientsListStr,
+              subject: subject,
+              content: bodyPlain,
+              mailFormat: 'plaintext'
+            })
+          });
+          channelUsed = 'zoho_mail_api_auto';
+        } catch (e) {}
+      }
+
+      const targetEndpoint = (cfg.correo_zoho.zoho_webhook_url || 'https://mail.zoho.com/api/accounts/messages').trim();
+      if (targetEndpoint && channelUsed !== 'zoho_mail_api_auto') {
+        for (const correoDestino of destinatarios) {
+          try {
+            fetch(targetEndpoint, {
+              method: 'POST',
+              mode: 'no-cors',
+              keepalive: true,
+              headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+              body: JSON.stringify({ ...payloadZoho, toAddress: correoDestino })
+            }).catch(() => {});
+          } catch (e) {}
+        }
+      }
+
+      try {
+        const logArr = JSON.parse(localStorage.getItem(EMAIL_QUEUE_KEY) || '[]');
+        logArr.unshift({
+          ticketId: ticket.id,
+          to: recipientsStr,
+          provider: 'Zoho Workplace (@example.org)',
+          proxy: `${cfg.red_interna.proxy_ip}:${cfg.red_interna.proxy_puerto}`,
+          domain: `${cfg.red_interna.dominio_principal} (${cfg.red_interna.dominio_secundario})`,
+          subject: subject,
+          sentAt: new Date().toISOString(),
+          dispatched: true,
+          channel: channelUsed
+        });
+        localStorage.setItem(EMAIL_QUEUE_KEY, JSON.stringify(logArr.slice(0, 100)));
+      } catch (e) {}
+    }
+
+    // Función para notificar al correo electrónico institucional del usuario cuando el ticket se cierra en el sistema
+    async function notificarCierreTicketAlUsuario(ticket) {
+      if (!ticket || !esCorreoInstitucionalZoho(ticket.requesterEmail)) return;
+      const cfg = getNetworkZohoConfig();
+      const correoUsuario = ticket.requesterEmail.trim().toLowerCase();
+      const remitentes = validarDestinatariosZoho(cfg.correo_zoho.destinatarios);
+      const marcaTiempoActual = ticket.closedTimestamp || ticket.closedAt || new Date().toLocaleString('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+      const agenteCerroCaso = ticket.closedByAgent || ticket.assignee || 'Soporte S6';
+      const tiempoEstimadoSoporte = ticket.supportTime || '45 minutos';
+      const subject = `[TICKET CERRADO ${ticket.id}] Solución y Cierre de Solicitud | Mesa de Soporte S6`;
+      const bodyPlain = [
+        `NOTIFICACIÓN DE CIERRE DE TICKET - MESA DE SOPORTE S6`,
+        `=====================================================`,
+        `Estimado(a) ${ticket.clientName || ticket.requester}:`,
+        `Le informamos que su ticket de soporte técnico ha sido resuelto y cerrado en el sistema.`,
+        ``,
+        `Radicado:                    ${ticket.id}`,
+        `Estado Final:                Resuelto / Cerrado`,
+        `Agente que Cerró el Caso:    ${agenteCerroCaso}`,
+        `Tiempo Estimado de Soporte:  ${tiempoEstimadoSoporte}`,
+        `Marca de Tiempo Actual:      ${marcaTiempoActual}`,
+        `Equipo / Área:               ${ticket.asset || ''}`,
+        `Tipo de Problema:            ${ticket.category} - ${ticket.subcategory}`,
+        `Observación de Cierre:       ${ticket.closureNote || 'Incidencia atendida y solucionada satisfactoriamente por Soporte S6.'}`
+      ].join('\n');
+
+      const targetEndpoint = (cfg.correo_zoho.zoho_webhook_url || 'https://mail.zoho.com/api/accounts/messages').trim();
+      try {
+        fetch(targetEndpoint, {
+          method: 'POST',
+          mode: 'no-cors',
+          keepalive: true,
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+          body: JSON.stringify({
+            fromAddress: remitentes[0],
+            toAddress: correoUsuario,
+            subject: subject,
+            content: bodyPlain,
+            mailFormat: 'plaintext',
+            ticketId: ticket.id,
+            closedByAgent: agenteCerroCaso,
+            supportTime: tiempoEstimadoSoporte,
+            closedTimestamp: marcaTiempoActual,
+            event: 'TICKET_CLOSED_USER_NOTIFICATION'
+          })
+        }).catch(() => {});
+      } catch (e) {}
+    }
+
+    async function submitClientTicket(ev, confirmed = false) {
+      ev.preventDefault();
+
+      const name = document.getElementById('clientName').value.trim();
+      const user = document.getElementById('clientUser').value.trim();
+      const email = document.getElementById('clientEmail').value.trim().toLowerCase();
+      const asset = document.getElementById('clientAsset').value.trim();
+      const workLocation = document.getElementById('clientWorkLocation').value.trim();
+      const cat = document.getElementById('clientCategory').value.trim();
+      const sub = document.getElementById('clientSubcategory').value.trim();
+      const desc = document.getElementById('clientDescription').value.trim();
+
+      if (!esCorreoInstitucionalZoho(email)) {
+        alert('El correo electrónico debe ser obligatoriamente institucional de Zoho Workplace con dominio @example.org (ejemplo: nombre.apellido@example.org).');
+        document.getElementById('clientEmail').focus();
+        return;
+      }
+
+      if (!cat || !sub) {
+        alert('Seleccione la categoría general y el tipo de problema específico.');
+        return;
+      }
+
+      if (!confirmed) {
+        document.getElementById('submitConfirmBody').innerHTML = `
+          <p>Revise la información antes de enviar la solicitud.</p>
+          <div><strong>Correo:</strong> ${escHtml(email)}</div>
+          <div><strong>Equipo:</strong> ${escHtml(asset)}</div>
+          <div><strong>Ubicación:</strong> ${escHtml(workLocation)}</div>
+          <div><strong>Tipo:</strong> ${escHtml(cat)} &bull; ${escHtml(sub)}</div>
+          <div><strong>Soportes:</strong> ${pendingAttachments.length} imagen(es)</div>
+        `;
+        document.getElementById('modalSubmitConfirm').classList.add('active');
+        return;
+      }
+
+      let nextId = '';
+      const nowStr = new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+      let createdAtStr = '';
+
+      const firstSentence = desc.split(/[.!\n]/)[0].trim();
+      const title = firstSentence.length > 10 && firstSentence.length <= 75
+        ? firstSentence
+        : `${sub} — ${asset}`;
+
+      const newTicket = {
+        id: nextId,
+        title: title,
+        category: cat,
+        subcategory: sub,
+        requester: `${name} (${user})`,
+        clientName: name,
+        clientUser: user,
+        requesterEmail: email,
+        clientEmail: email,
+        asset: asset,
+        priority: "Media",
+        status: "Abierto",
+        sla: "4h 00m",
+        slaClass: "sla-ok",
+        assignee: "Sin Asignar",
+        description: desc + (optionalResourceLink ? `\n\n[Recurso / Ruta adjunta]: ${optionalResourceLink}` : ''),
+        optionalResource: optionalResourceLink,
+        attachments: [...pendingAttachments],
+        origin: "Portal Cliente",
+        closureNotified: false,
+        createdAt: createdAtStr,
+        timeline: [
+          {
+            time: `Hoy ${nowStr}`,
+            user: `${name} (${email})`,
+            text: `Ticket registrado en el servidor. ${pendingAttachments.length ? `Seleccionó ${pendingAttachments.length} archivo(s), pero todavía no se cargan al servidor.` : ''}`
+          }
+        ]
+      };
+
+      try {
+        const response = await fetch('/api/tickets', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            clientName: name,
+            clientUser: user,
+            requesterEmail: email,
+            asset,
+            workLocation,
+            category: cat,
+            subcategory: sub,
+            title,
+            description: newTicket.description,
+            origin: 'Portal S6',
+            attachments: pendingAttachments.map(({ name, type, dataUrl }) => ({ name, type, dataUrl }))
+          })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'No fue posible registrar el ticket');
+        nextId = result.id;
+        createdAtStr = result.createdAt;
+      } catch (error) {
+        alert(error.message || 'No se pudo conectar con el servidor. El ticket no fue registrado.');
+        return;
+      }
+
+      // Mostrar únicamente la notificación emergente limpia con los datos del ticket
+      document.getElementById('confirmBody').innerHTML = `
+        <div style="text-align:center; padding:6px 0 10px;">
+          <div style="font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Número de Radicado</div>
+          <div style="font-size:28px; font-weight:800; color:var(--accent-blue); font-family:monospace; margin:4px 0;">${escHtml(nextId)}</div>
+          <div style="font-size:13px; color:var(--text-muted);">
+            Su solicitud quedó registrada en el servidor central. El correo no se envía automáticamente.
+          </div>
+        </div>
+        <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:14px; font-size:13px; display:flex; flex-direction:column; gap:8px;">
+          <div><strong>Fecha y hora:</strong> ${escHtml(createdAtStr)}</div>
+          <div><strong>Nombre:</strong> ${escHtml(name)}</div>
+          <div><strong>Usuario:</strong> ${escHtml(user)}</div>
+          <div><strong>Correo institucional:</strong> ${escHtml(email)}</div>
+          <div><strong>Equipo / Dependencia:</strong> ${escHtml(asset)}</div>
+          <div><strong>Tipo de problema:</strong> ${escHtml(cat)} &bull; ${escHtml(sub)}</div>
+          <div><strong>Descripción:</strong> ${escHtml(desc)}</div>
+          ${pendingAttachments.length ? `<div><strong>Soportes adjuntos:</strong> ${pendingAttachments.length} imagen(es) cargada(s) al servidor.</div>` : ''}
+        </div>
+      `;
+      document.getElementById('modalConfirm').classList.add('active');
+
+      resetClientForm();
+    }
+
+    function closeConfirmModal() {
+      document.getElementById('modalConfirm').classList.remove('active');
+    }
+
+    function closeSubmitConfirmModal() {
+      document.getElementById('modalSubmitConfirm').classList.remove('active');
+    }
+
+    function confirmClientTicketSubmission() {
+      closeSubmitConfirmModal();
+      submitClientTicket({ preventDefault() {} }, true);
+    }
+
+    function queueStartedAt(value) {
+      const date = new Date(value);
+      return Number.isNaN(date.getTime())
+        ? 'No disponible'
+        : date.toLocaleString('es-CO', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
+    }
+
+    async function loadTicketQueue() {
+      const list = document.getElementById('ticketQueueList');
+      try {
+        const response = await fetch(`/api/portal/ticket-queue?now=${Date.now()}`, { cache: 'no-store' });
+        const queue = await response.json();
+        if (!response.ok) throw new Error(queue.error || 'No fue posible consultar la cola.');
+        list.innerHTML = queue.tickets.length
+          ? queue.tickets.map(ticket => `
+              <div class="queue-item">
+                <div style="display:flex; justify-content:space-between; gap:8px; align-items:center;">
+                  <strong>Ticket ${ticket.turn}</strong>
+                  <span class="queue-status ${escHtml(ticket.slaClass)}">${escHtml(ticket.status)} · ${escHtml(ticket.sla)}</span>
+                </div>
+                <div style="font-family:monospace; font-size:12px; color:var(--accent-blue); margin-top:6px;">${escHtml(ticket.code)}</div>
+                <div class="queue-meta">Inicio: ${escHtml(queueStartedAt(ticket.startedAt))}</div>
+                <div class="queue-meta">Usuario: ${escHtml(ticket.requesterName)}</div>
+                <div class="queue-meta">Dependencia: ${escHtml(ticket.dependency)}</div>
+                <div class="queue-meta">Agente: ${escHtml(ticket.assignee || 'Sin asignar')}</div>
+              </div>
+            `).join('')
+          : '<div class="queue-item" style="color:var(--text-muted); font-size:12px;">No hay tickets pendientes en la cola.</div>';
+      } catch (error) {
+        list.innerHTML = `<div class="queue-item" style="color:var(--text-muted); font-size:12px;">No fue posible actualizar la cola: ${escHtml(error.message)}</div>`;
+      }
+    }
+
+    async function loadNetworkStatus() {
+      const list = document.getElementById('networkStatusList');
+      try {
+        const response = await fetch(`/api/portal/network-status?now=${Date.now()}`, { cache: 'no-store' });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'No fue posible consultar la red.');
+        let group = '';
+        list.innerHTML = data.services.map(service => {
+          const header = service.group !== group ? `<div class="net-group">${escHtml(service.group)}</div>` : '';
+          group = service.group;
+          const online = service.status === 'online';
+          return `${header}<div class="queue-item"><div class="net-row">
+            <span><strong>${escHtml(service.name)}</strong><div class="queue-meta">${escHtml(service.host)}</div></span>
+            <span class="${online ? 'net-online' : 'net-offline'}">${online ? '● En línea' : '● Sin conexión'}</span></div></div>`;
+        }).join('');
+        document.getElementById('networkStatusUpdated').textContent =
+          `Verificado ${new Date(data.checkedAt).toLocaleTimeString('es-CO')} · cada 30 s`;
+      } catch (error) {
+        list.innerHTML = `<div class="queue-item" style="color:var(--text-muted); font-size:12px;">No fue posible actualizar el estado: ${escHtml(error.message)}</div>`;
+      }
+    }
+
+    async function clearOutdatedPortalCache() {
+      if (localStorage.getItem('helpdesk_portal_client_build') === CLIENT_BUILD) return;
+      sessionStorage.clear();
+      if ('caches' in window) {
+        await Promise.all((await caches.keys()).map(cacheName => caches.delete(cacheName)));
+      }
+      localStorage.setItem('helpdesk_portal_client_build', CLIENT_BUILD);
+    }
+
+    async function refreshPortalWhenBuildChanges() {
+      try {
+        const response = await fetch(`/api/client-build?now=${Date.now()}`, { cache: 'no-store' });
+        const published = await response.json();
+        if (published.build && published.build !== CLIENT_BUILD) {
+          await clearOutdatedPortalCache();
+          location.replace(`/?build=${encodeURIComponent(published.build)}`);
+        }
+      } catch (error) {
+        console.warn('No se pudo comprobar la versión del portal:', error);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      await clearOutdatedPortalCache();
+      resetClientForm();
+      await Promise.all([loadPortalConfiguration(), loadTicketQueue(), loadNetworkStatus()]);
+      window.setInterval(loadTicketQueue, 30000);
+      window.setInterval(loadNetworkStatus, 30000);
+      window.setInterval(refreshPortalWhenBuildChanges, 30000);
+    });
+  </script>
+</body>
+</html>

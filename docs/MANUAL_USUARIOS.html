@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Manual de usuario | Mesa de Soporte S6</title>
+  <style>
+    :root { color-scheme: light; --ink:#1b2d35; --muted:#52646b; --line:#d8e1e3; --paper:#fff; --wash:#f2f6f5; --teal:#08736d; --amber:#8a4b00; --amber-bg:#fff3dd; --red:#9c2b2b; --red-bg:#fff0ee; font-family: "Segoe UI", Arial, sans-serif; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--wash); color:var(--ink); line-height:1.65; }
+    header { background:#16343b; color:#fff; padding:34px max(24px,calc((100vw - 920px)/2)); border-bottom:5px solid var(--teal); }
+    header p { margin:8px 0 0; color:#c8d8d9; }
+    main { width:min(920px,100% - 32px); margin:28px auto 56px; background:var(--paper); border:1px solid var(--line); padding:clamp(22px,5vw,48px); }
+    h1 { margin:0; font-size:clamp(28px,5vw,40px); line-height:1.15; }
+    h2 { margin:38px 0 12px; padding-top:10px; border-top:1px solid var(--line); font-size:23px; }
+    h3 { margin:24px 0 8px; font-size:18px; }
+    a { color:#075f65; text-underline-offset:3px; }
+    nav { margin:24px 0; padding:18px 22px; background:#edf4f2; border-left:4px solid var(--teal); }
+    nav ul { columns:2; margin:8px 0 0; padding-left:20px; }
+    li { margin:5px 0; }
+    .notice { margin:22px 0; padding:16px 18px; border-left:4px solid #d38925; background:var(--amber-bg); }
+    .alert { border-left-color:var(--red); background:var(--red-bg); }
+    .url { display:block; margin:16px 0; padding:14px 16px; background:#edf4f2; border:1px solid var(--line); font-weight:700; overflow-wrap:anywhere; }
+    footer { margin-top:40px; padding-top:16px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }
+    code { background:#edf1f2; padding:2px 5px; overflow-wrap:anywhere; }
+    @media(max-width:600px) { nav ul { columns:1; } header { padding:26px 20px; } }
+    @media print { body { background:#fff; } main { width:100%; border:0; margin:0; } nav { display:none; } a { color:inherit; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Manual de usuario</h1>
+  <p>Portal de solicitudes · Mesa de Soporte S6 · Revisión 8 de octubre de 2026</p>
+</header>
+<main>
+  <nav aria-label="Contenido">
+    <strong>Contenido</strong>
+    <ul>
+      <li><a href="#acceso">Acceso</a></li>
+      <li><a href="#registro">Registrar un ticket</a></li>
+      <li><a href="#catalogo">Catálogo de problemas</a></li>
+      <li><a href="#confirmacion">Confirmación y errores</a></li>
+      <li><a href="#archivos">Archivos y correo</a></li>
+      <li><a href="#privacidad">Privacidad</a></li>
+      <li><a href="#ayuda">Solución de problemas</a></li>
+    </ul>
+  </nav>
+
+  <section id="acceso">
+    <h2>Acceso</h2>
+    <p>El portal de solicitudes de la unidad está disponible en:</p>
+    <a class="url" href="http://192.0.2.10:8080/">http://192.0.2.10:8080/</a>
+    <p>Debe estar conectado a la LAN institucional <code>192.0.2.0/24</code>. La página raíz presenta el formulario del portal. Si no carga, contacte a Soporte TI e indique la hora, el equipo y el mensaje que aparece.</p>
+    <div class="notice alert"><strong>Importante:</strong> el piloto usa HTTP sin cifrado. Úselo únicamente dentro de la LAN institucional confiable. No lo abra desde Internet, Wi-Fi público, red de invitados ni equipos compartidos fuera de la unidad.</div>
+  </section>
+
+  <section id="registro">
+    <h2>Registrar un ticket</h2>
+    <ol>
+      <li>Escriba su nombre y usuario o cédula.</li>
+      <li>Ingrese un correo institucional terminado en <code>@example.org</code>.</li>
+      <li>Indique el hostname del equipo o su dependencia/puesto. Si puede, use el hostname que aparece en el equipo.</li>
+      <li>Seleccione una categoría: Hardware, Software, Red o Impresoras.</li>
+      <li>Seleccione el tipo de problema específico que aparece después de elegir la categoría.</li>
+      <li>Describa el síntoma, cuándo comenzó y el mensaje de error. El formulario permite hasta 500 caracteres.</li>
+      <li>Pulse <strong>Enviar Ticket</strong> una vez y espere la respuesta.</li>
+    </ol>
+    <p>El servidor valida los datos y genera un radicado con formato <code>S6-AAAA-NNNNNN</code> (año y consecutivo). Guárdelo para identificar el caso al comunicarse con Soporte.</p>
+  </section>
+
+  <section id="catalogo">
+    <h2>Catálogo de problemas</h2>
+    <ul>
+      <li><strong>Hardware:</strong> periféricos; almacenamiento HDD/SSD/NVME; memoria RAM; fuente de poder; video GPU; motherboard; botones de chasis; refrigeración; tarjeta de red; pila de motherboard; monitor/pantalla; puertos de audio/video/USB; cables de audio/video.</li>
+      <li><strong>Software:</strong> rendimiento del sistema operativo; rendimiento de aplicaciones; falla de aplicaciones; lectura/escritura de archivos; servicios de dominio, inicio de sesión y sincronización.</li>
+      <li><strong>Red:</strong> acceso a plataformas institucionales; acceso a plataformas específicas; navegación web; red local, recursos compartidos y bases de datos.</li>
+      <li><strong>Impresoras:</strong> impresión directa/protegida; falla de máquina; conexión a impresoras o escáner compartidos; escáner local; salida de impresión, tóner o tinta.</li>
+    </ul>
+    <p>Los nombres exactos pueden tener diferencias de acentos o abreviaturas. Seleccione la opción que mejor describa el síntoma.</p>
+  </section>
+
+  <section id="confirmacion">
+    <h2>Confirmación y errores</h2>
+    <ul>
+      <li>El ticket está creado solo si aparece la confirmación y un radicado.</li>
+      <li>Si aparece un error de conexión, el servidor no confirmó el registro. Compruebe con Soporte antes de volver a enviarlo para evitar duplicados.</li>
+      <li>Si aparece un límite de solicitudes, espere 10 minutos antes de reintentar.</li>
+      <li>El formulario exige correo <code>@example.org</code>; no use una dirección personal.</li>
+      <li>No existe actualmente consulta de estado autoservicio por radicado. Comuníquelo a Soporte para seguimiento.</li>
+    </ul>
+  </section>
+
+  <section id="archivos">
+    <h2>Archivos y correo</h2>
+    <p>El formulario acepta hasta seis capturas JPEG, PNG o WebP. Las imágenes se comprimen en el navegador y se cargan al ticket; el límite es 900 KB por imagen y 5 MB en total. El técnico las consulta desde la consola administrativa. No adjunte contraseñas, datos clasificados ni información que no sea necesaria para resolver la incidencia.</p>
+    <p>Si el servidor tiene configurado el relay SMTP institucional, recibirá una confirmación al crear el caso y una notificación cuando cambie su estado, en el correo institucional indicado. La confirmación aparece también en el navegador. El portal raíz no abre WhatsApp ni comparte los datos automáticamente.</p>
+  </section>
+
+  <section id="privacidad">
+    <h2>Privacidad</h2>
+    <p>Proporcione solo los datos mínimos necesarios para localizar al solicitante y el equipo. No escriba contraseñas, códigos MFA, tokens, datos bancarios ni información clasificada. Los tickets se guardan en la base central y deben manejarse de acuerdo con las políticas institucionales de privacidad y retención.</p>
+  </section>
+
+  <section id="ayuda">
+    <h2>Solución de problemas</h2>
+    <ul>
+      <li><strong>No abre la dirección:</strong> confirme que está en la LAN institucional. Si otros sitios internos tampoco funcionan, contacte a soporte de red.</li>
+      <li><strong>Categoría sin subtipos:</strong> seleccione primero una categoría general.</li>
+      <li><strong>Correo rechazado:</strong> verifique que termine exactamente en <code>@example.org</code>.</li>
+      <li><strong>No apareció un radicado:</strong> no asuma que el ticket quedó creado; contacte al técnico y verifique antes de reenviar.</li>
+      <li><strong>No llegó correo:</strong> conserve el radicado y avise a soporte para que revise el relay SMTP del servidor.</li>
+    </ul>
+    <p>La consola administrativa requiere una cuenta autorizada; el portal de usuario no solicita contraseña.</p>
+  </section>
+  <footer>Documento de usuario · Mesa de Soporte S6 · Portal LAN piloto</footer>
+</main>
+</body>
+</html>

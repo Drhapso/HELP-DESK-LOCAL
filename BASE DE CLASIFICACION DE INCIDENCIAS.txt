@@ -1,0 +1,46 @@
+FALLAS DE HARDWARE
+
+- Fallo en los perifericos
+- Fallo de Almacenamiento (HDD, SSD, NVME)
+- Fallo de memoria ram
+- Fallo de fuente de poder
+- Fallo de video GPU
+- Fallo de motherboard
+- Fallo de botones en Chasis
+- Fallo de refrigeracion
+- Fallo de tarjeta de red
+- Fallo de pila de motherboard
+- Fallo de monitores o pantalla integrada
+- Fallo en salidas de audio / video / puertos usb / otros puertos
+- Fallo en cables de audio o video
+
+
+FALLAS DE SOFTWARE
+
+- Fallo de rendimiento del SO
+- Fallo de rendimiento de aplicativos
+- Fallo de aplicativos
+- Fallo de lectura / escritura de archivos
+- Fallo de servicios de dominio (inicios de sesion, conexion al dominio, sincronizacion general)
+
+
+FALLAS DE SERVICIOS DE RED
+
+- Fallas en acceso a plataformas institucionales
+- Fallas en acceso a plataformas especificas
+- Fallo de navegacion web
+- Fallo de red local (recusros compartidos, acceso a bases de datos)
+
+
+
+FALLAS CON EQUIPOS DE IMPRESION
+
+- Falla en impresion directa o protegida
+- Falla en maquina
+- Falla en conexion a impresoras o escaner compartidos
+- Falla en escaner local
+- Falla en salida de impresion (Falta de toner/tinta, errores comunes en la impresion)
+
+
+
+
